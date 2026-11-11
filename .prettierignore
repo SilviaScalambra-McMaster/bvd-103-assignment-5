@@ -1,0 +1,6 @@
+node_modules/
+build/
+client/
+.openapi-generator/
+package-lock.json
+mcmasteful-book-list.json

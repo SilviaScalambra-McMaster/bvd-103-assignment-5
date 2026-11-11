@@ -1,0 +1,9 @@
+Assignment 5 — Adding OpenAPI
+Repository URL: REPLACE_WITH_YOUR_ACTUAL_GITHUB_REPOSITORY_URL
+Release tag: assignment-5
+Release URL: REPLACE_WITH_YOUR_ACTUAL_RELEASE_URL
+
+IMPORTANT: Replace both placeholder URLs with real links after verifying
+the pushed project and making the GitHub release.
+Submit this text file plus a real Swagger UI screenshot and a real GitHub
+Actions screenshot in Avenue to Learn.

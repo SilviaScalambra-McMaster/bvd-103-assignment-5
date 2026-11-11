@@ -1,0 +1,7 @@
+BVD 103 - Assignment 2
+
+GitHub Repository:
+https://github.com/SilviaScalambra-McMaster/bvd-103-assignment-1
+
+GitHub Release:
+https://github.com/SilviaScalambra-McMaster/bvd-103-assignment-1/releases/tag/assignment-2

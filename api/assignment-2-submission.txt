@@ -1,0 +1,67 @@
+BVD 103 - Assignment 2
+
+GitHub Repository:
+https://github.com/SilviaScalambra-McMaster/bvd-103-assignment-1
+
+GitHub Release:
+https://github.com/SilviaScalambra-McMaster/bvd-103-assignment-1/releases/tag/assignment-2
+
+
+REST CLIENT TESTING
+
+1. CREATE BOOK
+
+Request:
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+    "name": "REST Client Test Book",
+    "author": "Test Author",
+    "description": "A test book created using the VS Code REST Client.",
+    "price": 24.99,
+    "image": "https://example.com/test-book.jpg"
+}
+
+Response:
+HTTP/1.1 201 Created
+
+{
+  "id": "6abbef90c4f49404fdf1a1c4",
+  "name": "REST Client Test Book",
+  "author": "Test Author",
+  "description": "A test book created using the VS Code REST Client.",
+  "price": 24.99,
+  "image": "https://example.com/test-book.jpg"
+}
+
+
+2. LIST BOOKS
+
+Request:
+GET http://localhost:3000/books
+
+Response:
+HTTP/1.1 200 OK
+
+The response returned the books stored in MongoDB.
+
+
+3. DELETE BOOK
+
+Request:
+DELETE http://localhost:3000/books/6abbef90c4f49404fdf1a1c4
+
+Response:
+HTTP/1.1 204 No Content
+
+
+4. DELETE VERIFICATION
+
+Request:
+GET http://localhost:3000/books
+
+Response:
+HTTP/1.1 200 OK
+
+The test book was no longer present in the response, confirming that it was deleted successfully.

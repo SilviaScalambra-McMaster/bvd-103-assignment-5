@@ -1,0 +1,62 @@
+### Start the API with `npm run start-server`.
+### First create a book using the call below, then replace BOOK_ID and ORDER_ID.
+
+@host = http://localhost:3000
+@bookId = REPLACE_WITH_CREATED_BOOK_ID
+@orderId = REPLACE_WITH_CREATED_ORDER_ID
+
+### Create book
+POST {{host}}/books
+Content-Type: application/json
+
+{
+  "name": "Assignment 4 Demo",
+  "author": "Test Author",
+  "description": "Demonstrates warehouse and orders",
+  "price": 12,
+  "image": "https://example.com/book.jpg"
+}
+
+### List books with stock
+GET {{host}}/books
+
+### Lookup one book including stock
+GET {{host}}/books/{{bookId}}
+
+### Add stock to a shelf
+POST {{host}}/warehouse/shelves
+Content-Type: application/json
+
+{
+  "bookId": "{{bookId}}",
+  "shelf": "A-01",
+  "numberOfBooks": 5
+}
+
+### Find stock locations
+GET {{host}}/warehouse/books/{{bookId}}/locations
+
+### Order two copies
+POST {{host}}/orders
+Content-Type: application/json
+
+{
+  "books": ["{{bookId}}", "{{bookId}}"]
+}
+
+### List pending orders
+GET {{host}}/orders
+
+### Fulfil the order
+POST {{host}}/orders/{{orderId}}/fulfill
+Content-Type: application/json
+
+{
+  "fulfillment": [
+    {
+      "book": "{{bookId}}",
+      "shelf": "A-01",
+      "numberOfBooks": 2
+    }
+  ]
+}

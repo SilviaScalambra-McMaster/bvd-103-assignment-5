@@ -1,0 +1,10 @@
+[
+  {
+    _id: ObjectId('6abbe4fb03369ed8c45f373f'),
+    name: 'Giant\'s Bread',
+    author: 'Agatha Christie',
+    description: 'A satisfying novel.',
+    price: Double('21.86'),
+    image: 'https://upload.wikimedia.org/wikipedia/en/4/45/Giant%27s_Bread_First_Edit.jpg'
+  }
+]

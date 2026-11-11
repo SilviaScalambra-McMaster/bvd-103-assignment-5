@@ -1,0 +1,16 @@
+{
+  "entryFile": "src/server.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/api/**/*.route.ts"],
+  "spec": {
+    "outputDirectory": "build",
+    "specVersion": 3,
+    "name": "McMasterful Books Partners API",
+    "description": "Book catalogue, shelf inventory and pending orders for partner applications.",
+    "version": "5.0.0"
+  },
+  "routes": {
+    "routesDir": "build",
+    "middleware": "koa"
+  }
+}

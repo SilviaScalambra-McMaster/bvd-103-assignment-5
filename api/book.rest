@@ -1,0 +1,25 @@
+###
+# CREATE A BOOK
+POST http://localhost:3000/books
+Content-Type: application/json
+
+{
+    "name": "REST Client Test Book",
+    "author": "Test Author",
+    "description": "A test book created using the VS Code REST Client.",
+    "price": 24.99,
+    "image": "https://example.com/test-book.jpg"
+}
+
+###
+# LIST ALL BOOKS
+GET http://localhost:3000/books
+
+###
+# LIST BOOKS BETWEEN $20 AND $40
+GET http://localhost:3000/books?filters[0][from]=20&filters[0][to]=40
+
+###
+# DELETE A BOOK
+# We will fill in the ID after creating the book.
+DELETE http://localhost:3000/books/6abbef8cc4f49404fdf1a1c3

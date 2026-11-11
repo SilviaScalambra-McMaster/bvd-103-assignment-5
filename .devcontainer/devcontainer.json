@@ -1,0 +1,23 @@
+{
+  "name": "Node.js & TypeScript",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "dockerComposeFile": ["docker-compose.yml"],
+  "service": "dev",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": { "version": "21" },
+    "ghcr.io/mcmastercce/bvd-103-mcmasterful-books/mcmasterful-books:latest": {}
+  },
+  // uncomment the line below if the repo is cloned to a local folder and opened as container
+  // "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "customizations": {
+    "vscode": {
+      "extensions": ["humao.rest-client", "rangav.vscode-thunder-client"],
+      "settings": {
+        "rest-client.previewResponseInUntitledDocument": true
+      }
+    }
+  },
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  "remoteUser": "root",
+  "containerUser": "root"
+}
