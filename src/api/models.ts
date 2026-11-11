@@ -73,7 +73,7 @@ export interface PlaceOrderResponse {
 
 export interface PendingOrder {
   orderId: string;
-  books: Record<string, number>;
+  books: { [key: string]: number };
 }
 
 export interface FulfillmentItem {
