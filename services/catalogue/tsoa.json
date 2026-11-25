@@ -1,0 +1,13 @@
+{
+  "entryFile": "src/server.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/api/**/*.route.ts"],
+  "spec": {
+    "outputDirectory": "build",
+    "specVersion": 3,
+    "name": "McMasterful Catalogue API",
+    "description": "Catalogue operations and locally cached stock totals.",
+    "version": "7.0.0"
+  },
+  "routes": {"routesDir": "build", "middleware": "koa"}
+}

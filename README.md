@@ -1,157 +1,99 @@
-# McMasterful Books — Assignment 5: Adding OpenAPI
+# McMasterful Books — BDV 103 Assignment 7
 
-This project extends the Assignment 4 Koa book catalogue, warehouse inventory,
-and orders system with generated OpenAPI 3 documentation, a `typescript-fetch`
-partner SDK, SDK-driven API tests, and a generated-client website adapter.
+This version separates the original application into three bounded services and adds RabbitMQ event messaging.
 
-## Prerequisites
+## Services
 
-- Node.js 22 or Node.js 20.19+, npm
-- Java 21 (`java -version`) for the OpenAPI Generator CLI
-- MongoDB available at `mongodb://mongo:27017` when running the website/backend
-  in the course devcontainer (or set `MONGO_URI`)
+- `services/catalogue` — owns catalogue books and cached total stock.
+- `services/warehouse` — owns shelf inventory and a local cache of book metadata.
+- `services/orders` — owns orders and a local cache of valid book IDs.
+- `services/swagger` — hosts the combined OpenAPI documentation.
+- `packages/messaging` — small shared event-bus client and event contracts.
 
-The VS Code devcontainer config includes a Java feature; rebuild the container
-after updating `.devcontainer/devcontainer.json`.
+No service reads another service's MongoDB database. Runtime changes are propagated through RabbitMQ events.
 
-## First-time setup
+## Run locally with Docker
+
+Prerequisites: Docker Desktop.
 
 ```bash
 npm install
 npm run generate
-npm run start-server
+docker compose up --build
 ```
 
-**Important:** The source ZIP originated in an npm-restricted environment.
-The included `package-lock.json` comes from Assignment 4 and is **out of sync**
-with Assignment 5's dependencies. The first `npm install` updates it. Commit
-the resulting lockfile before submitting; CI uses `npm install` until this
-has been done. After that, `npm ci` is the preferable reproducible CI install.
+The external API is available through Nginx at:
 
-`npm run generate` runs `generate-openapi.sh`: tsoa generates `build/swagger.json`
-and `build/routes.ts`; OpenAPI Generator produces `client/` from the spec.
-Both directories are ignored by Git because they are generated outputs.
-They are regenerated before `start-server`, `typecheck`, and `test:api`.
+- `http://localhost:8080/books`
+- `http://localhost:8080/warehouse/shelves`
+- `http://localhost:8080/orders`
+- `http://localhost:8080/docs`
 
-Run the supplied course website in another terminal:
+RabbitMQ management UI is available at `http://localhost:15672`.
 
-```bash
-mcmasterful-books
-```
+## Event flow
 
-The website adapter selector is `adapter/index.ts`, pointing to the new
-`adapter/assignment-5.ts`. All its HTTP calls use the generated SDK.
+Catalogue publishes:
 
-## API documentation
+- `BookAdded`
+- `BookUpdated`
+- `BookDeleted`
 
-After starting the backend:
+Warehouse publishes:
 
-- [Swagger UI](http://localhost:3000/docs)
-- [OpenAPI specification](http://localhost:3000/docs/spec)
+- `BookStockChanged`
 
-The generated SDK exports `BooksApi`, `WarehouseApi`, `OrdersApi`, and `HelloApi`.
-For example:
+Orders publishes:
 
-```ts
-import { BooksApi, Configuration } from "./client";
-const api = new BooksApi(
-  new Configuration({ basePath: "http://localhost:3000" }),
-);
-const books = await api.listBooks();
-const filtered = await api.searchBooks({
-  searchBooksRequest: { filters: [{ author: "Writer" }, { from: 25 }] },
-});
-```
+- `OrderPlaced`
+- `OrderFulfillmentRequested`
 
-`POST /books/search` is a new partner-friendly operation. Its `filters` array
-preserves Assignment 3 semantics: fields in one group use AND; groups use OR.
-The original `GET /books?filters[0][name]=...` still works to preserve older
-clients; simple `GET /books?author=...&from=...` is also documented.
+Warehouse consumes book events to maintain its local book cache and consumes fulfillment requests. It publishes either `OrderFulfillmentCompleted` or `OrderFulfillmentFailed`.
 
-## Available endpoints
+Orders consumes book events to maintain its valid-book cache and consumes fulfillment results.
 
-| Method | Path                                  | Description                             |
-| ------ | ------------------------------------- | --------------------------------------- |
-| GET    | `/hello/{name}`                       | Simple SDK smoke test                   |
-| GET    | `/books`                              | List all books, optional simple filters |
-| POST   | `/books/search`                       | Search using grouped OR filters         |
-| GET    | `/books/{id}`                         | Book details and shelf stock            |
-| POST   | `/books`                              | Create a book                           |
-| PUT    | `/books/{id}`                         | Replace book metadata                   |
-| DELETE | `/books/{id}`                         | Delete book                             |
-| POST   | `/warehouse/shelves`                  | Add physical inventory                  |
-| GET    | `/warehouse/books/{bookId}/locations` | Locate shelf copies                     |
-| POST   | `/orders`                             | Place an order                          |
-| GET    | `/orders`                             | List pending orders                     |
-| POST   | `/orders/{orderId}/fulfill`           | Fulfil an order                         |
+Catalogue consumes `BookStockChanged` and updates its local `stockTotal`.
 
-Input validation uses tsoa-generated request checks and original domain
-validation. Domain errors return `{ "error": "message" }` with HTTP 400,
-404, or 409 as appropriate. Successful delete, shelf placement and fulfilment
-return HTTP 204 without a response body.
+For initial synchronization, warehouse and orders may read the catalogue API once when starting. After startup, changes are synchronized by events rather than service-to-service calls.
+
+## OpenAPI generation
+
+Each API has its own `tsoa.json` and generates its own `build/swagger.json` and `build/routes.ts`.
+
+The root `npm run generate` command generates all three API specs and combines their paths and schemas into:
+
+`services/swagger/build/swagger.json`
+
+The Swagger service serves that combined document.
 
 ## Verification
 
 ```bash
-npm run generate           # Recreate spec, routes, and SDK
-npm run typecheck          # Type-check source + generated artifacts
-npm run lint               # ESLint; ignores generated code
-npm run test:unit          # Existing unit + MongoDB memory integration tests
-npm run test:api           # Real HTTP tests through generated SDK
-npm run test:ci            # Both suites
+npm install
+npm run generate
+npm run typecheck
+npm run lint
 npm run format:check
 ```
 
-`test:unit` includes existing MongoDB integration tests. They use
-`mongodb-memory-server` and may download a MongoDB binary on first run.
-`test:api` uses an isolated, real HTTP Koa server with in-memory repository
-implementations; the SDK makes actual HTTP calls to each test server.
+Then:
 
-GitHub Actions runs independent lint, typecheck, unit/integration, and
-SDK API-test jobs. Java 21 is provisioned for generation jobs.
-
-## Structure
-
-```text
-src/api/*.route.ts        tsoa controller classes (API's source of truth)
-src/api/models.ts         documented partner request/response contracts
-src/api/services.ts       Koa request-state service lookup
-src/books/               catalogue domain + persistence
-src/warehouse/           shelf inventory domain + persistence
-src/orders/              order domain + persistence
-src/app.ts                Koa server assembly and Swagger UI
-adapter/assignment-5.ts  generated-client website adapter
-tests/run_server.ts       independent API test server fixture
-tests/partners-api.spec.ts SDK-based HTTP contract tests
-tsoa.json                 generator configuration
-openapitools.json         pinned Java generator version
-generate-openapi.sh       full generation pipeline
-.github/workflows/ci.yml separate static/unit/API jobs
-build/                    generated (ignored)
-client/                   generated (ignored)
+```bash
+docker compose up --build
 ```
 
-## Configuration and previous limitations
+Test the external API through Nginx, not the individual containers.
 
-- `MONGO_URI` defaults to `mongodb://mongo:27017`.
-- `MONGO_DB_PREFIX` defaults to `mcmasterful`.
-- `PORT` defaults to `3000`.
+## GitHub submission
 
-The Assignment 4 service layer retains its single-process order-fulfilment
-serialization and compensating writes. Production multi-process deployments
-need MongoDB replica-set transactions to achieve durable cross-document
-atomicity. The assignment does not implement distributed transactions.
+The assignment requires a GitHub release tagged `assignment-7`. Then create one `.txt` file containing the repository URL and the release tag or release URL.
 
-## Assignment 5 submission checklist
+Example:
 
-1. Run `npm install`, generation, tests, typecheck, lint, and formatting checks.
-   Commit the refreshed `package-lock.json`.
-2. Start backend and course website; verify all website features using the SDK.
-3. Commit work incrementally and push to your **existing** GitHub repository.
-4. Inspect the GitHub Actions run and resolve failures.
-5. Capture a PNG/JPG of Swagger at `/docs` and the green Actions run.
-6. Create a GitHub release tagged `assignment-5`.
-7. Create a text file with the actual repository URL and release tag or URL;
-   submit it with both screenshots in the single Avenue to Learn submission.
+```text
+Repository: https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+Release tag: assignment-7
+Release URL: https://github.com/YOUR-USERNAME/YOUR-REPOSITORY/releases/tag/assignment-7
+```
 
-Never submit placeholder URLs or mock screenshots as real evidence.
+Submit that single `.txt` file to Avenue to Learn. Keep a copy of the project and the submission receipt.

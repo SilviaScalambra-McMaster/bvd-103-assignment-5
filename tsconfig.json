@@ -1,25 +1,27 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "lib": ["es2023", "dom", "dom.iterable"],
-    "module": "node16",
+    "lib": [
+      "es2023",
+      "dom"
+    ],
+    "module": "CommonJS",
     "target": "es2022",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*.ts",
-    "adapter/**/*.ts",
+    "services/**/*.ts",
+    "packages/**/*.ts",
     "tests/**/*.ts",
-    "build/**/*.ts",
-    "client/**/*.ts",
-    "vitest*.ts"
+    "build/**/*.ts"
   ],
-  "exclude": ["node_modules", "adapter/assignment-1.ts", "playgrounds"]
+  "exclude": [
+    "node_modules"
+  ]
 }

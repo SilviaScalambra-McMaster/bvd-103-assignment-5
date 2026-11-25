@@ -1,0 +1,9 @@
+{
+  "name": "@mcmasterful/messaging",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "amqplib": "^0.10.9"
+  }
+}

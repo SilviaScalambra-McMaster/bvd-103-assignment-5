@@ -1,0 +1,10 @@
+import Koa from "koa";
+import {koaSwagger} from "koa2-swagger-ui";
+import fs from "node:fs";
+import path from "node:path";
+const app=new Koa();
+const specPath=path.resolve(process.cwd(),"build/swagger.json");
+const swagger=JSON.parse(fs.readFileSync(specPath,"utf8"));
+app.use(koaSwagger({routePrefix:"/docs",specPrefix:"/docs/spec",exposeSpec:true,swaggerOptions:{spec:swagger}}));
+app.use(async ctx=>{if(ctx.path==="/docs/spec"){ctx.type="application/json";ctx.body=swagger;}});
+const port=Number(process.env.PORT??3000);app.listen(port,()=>console.log(`Swagger service on ${port}`));

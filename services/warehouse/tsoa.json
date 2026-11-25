@@ -1,0 +1,7 @@
+{
+  "entryFile": "src/server.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/api/**/*.route.ts"],
+  "spec": {"outputDirectory":"build","specVersion":3,"name":"McMasterful Warehouse API","description":"Warehouse shelf inventory service.","version":"7.0.0"},
+  "routes":{"routesDir":"build","middleware":"koa"}
+}

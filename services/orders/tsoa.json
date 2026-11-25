@@ -1,0 +1,7 @@
+{
+  "entryFile": "src/server.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/api/**/*.route.ts"],
+  "spec": {"outputDirectory":"build","specVersion":3,"name":"McMasterful Orders API","description":"Orders and event-driven fulfilment.","version":"7.0.0"},
+  "routes":{"routesDir":"build","middleware":"koa"}
+}

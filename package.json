@@ -1,28 +1,29 @@
 {
-  "name": "mcmasterful-books-assignment-5",
+  "name": "mcmasterful-books-assignment-7",
   "version": "1.0.0",
-  "description": "McMasterful Books backend with generated OpenAPI 3 partner SDK and contract tests",
-  "main": "index.js",
+  "private": true,
+  "description": "BDV 103 Assignment 7 - separated services and RabbitMQ messaging",
+  "workspaces": [
+    "services/*",
+    "packages/*"
+  ],
   "scripts": {
-    "generate:routes": "tsoa spec-and-routes",
-    "generate:sdk": "openapi-generator-cli generate -i ./build/swagger.json -o ./client -g typescript-fetch --additional-properties=useSingleRequestParameter=true",
-    "generate": "bash ./generate-openapi.sh",
-    "start-server": "npm run generate && tsx src/server.ts",
-    "typecheck": "npm run generate && tsc --noEmit",
+    "install:all": "npm install",
+    "generate": "npm run generate:spec && npm run generate:sdk",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "fmt": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest",
-    "test:unit": "npm run generate:routes && vitest run --config vitest.config.mts",
-    "test:api": "npm run generate && vitest run --config vitest.api.config.mts",
-    "test:ci": "npm run test:unit && npm run test:api"
+    "start:catalogue": "npm --workspace @mcmasterful/catalogue run start",
+    "start:warehouse": "npm --workspace @mcmasterful/warehouse run start",
+    "start:orders": "npm --workspace @mcmasterful/orders run start",
+    "start:swagger": "npm --workspace @mcmasterful/swagger run start",
+    "generate:sdk": "openapi-generator-cli generate -i ./services/swagger/build/swagger.json -o ./client -g typescript-fetch --additional-properties=useSingleRequestParameter=true",
+    "generate:spec": "node scripts/generate-openapi.mjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "@koa/cors": "^5.0.0",
     "@koa/router": "12.0.1",
+    "amqplib": "^0.10.9",
     "is-generator-function": "1.0.4",
     "koa": "^2.16.3",
     "koa-bodyparser": "^4.4.1",
@@ -34,20 +35,20 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
-    "@openapitools/openapi-generator-cli": "^2.13.12",
+    "@types/amqplib": "^0.10.7",
     "@types/koa": "^2.15.0",
     "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^12.0.4",
     "@types/koa-bodyparser": "^4.3.13",
     "@types/koa-qs": "^2.0.3",
     "@types/node": "^22.19.3",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
-    "mongodb-memory-server": "^10.2.0",
     "prettier": "^3.9.9",
     "typescript": "^5.6.2",
-    "typescript-eslint": "^8.36.0",
-    "vitest": "^5.1.0"
+    "@openapitools/openapi-generator-cli": "^2.13.12"
   },
   "overrides": {
     "is-generator-function": "1.0.4"

@@ -1,0 +1,21 @@
+{
+  "name": "@mcmasterful/orders",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "tsoa spec-and-routes",
+    "start": "npm run generate && tsx src/server.ts"
+  },
+  "dependencies": {
+    "@koa/cors": "^5.0.0",
+    "@koa/router": "12.0.1",
+    "@mcmasterful/messaging": "1.0.0",
+    "koa": "^2.16.3",
+    "koa-bodyparser": "^4.4.1",
+    "koa-qs": "^3.0.0",
+    "koa2-swagger-ui": "5.12.0",
+    "mongodb": "^7.7.0",
+    "tsoa": "^5.1.1",
+    "tsx": "^4.19.1"
+  }
+}

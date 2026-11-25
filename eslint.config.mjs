@@ -1,20 +1,8 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
-import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
+  { ignores: ["**/node_modules/**", "**/build/**"] },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
-  prettier,
-  {
-    ignores: [
-      "node_modules/",
-      "dist/",
-      "build/",
-      "client/",
-      ".openapi-generator/",
-      "playgrounds/",
-      "adapter/assignment-1.ts",
-    ],
-  },
 );
